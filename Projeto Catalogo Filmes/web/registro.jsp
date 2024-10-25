@@ -32,6 +32,7 @@
     String emailLogado = String.valueOf(session.getAttribute("email"));
     String pkUserLogado = String.valueOf(session.getAttribute("pkuser"));
     String fotoCaminho = String.valueOf(session.getAttribute("img"));
+    
     if(fotoCaminho == "" || fotoCaminho == null){
     fotoCaminho = "./imgs/Foto.jpg";}
 
