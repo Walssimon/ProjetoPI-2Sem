@@ -10,8 +10,13 @@ public class Usuario extends ConectarDao implements IcrudDao  {
     public String nome;
     public String email;
     public String senha;
-
-
+    public int pkuser;
+    public String img;
+    
+    public String userMaster = "admin";
+    public String senhaMaster = "1234";
+    public String nivelMaster = "Master";
+    
 
     public String getEmail() {
         return email;
@@ -53,19 +58,32 @@ public class Usuario extends ConectarDao implements IcrudDao  {
     
     public boolean getLogin() {
         
+        this.statusSQL = null;
         if (email.equals("admin") && senha.equals("1234")) 
         return true;
         
         try {
             
-            sql = "SELECT * FROM TB_USUARIO WHERE DS_EMAIL = ? AND DS_SENHA = ?";
+            sql = "SELECT * FROM TB_USUARIO WHERE UCASE(TRIM(DS_EMAIL)) = UCASE(TRIM(?)) AND UCASE(TRIM(DS_SENHA)) = UCASE(TRIM(?))";
             ps = con.prepareStatement(sql); // prepara SQL
             ps.setString(1, email); // Configura Parametros
             ps.setString(2, senha); // Configura Parametros
             tab = ps.executeQuery(); // Executa comando SQL
-            
-            if (tab.next()) return true;
-                this.statusSQL = null;// armazena null se deu tudo certo
+            if (tab.next()){
+                nome = tab.getString("NM_USUARIO");
+                email = tab.getString("DS_EMAIL");
+                pkuser = tab.getInt("ID_USUARIO");
+                img = tab.getString("NM_IMAGEN");
+                return true;   
+            }
+            if(email.equals(userMaster) && senha.equals(senhaMaster)){
+                nome = "";
+                email = "";
+                pkuser = 0;
+                img = "";
+                return true;
+            }
+                // armazena null se deu tudo certo
         } catch (SQLException ex) {
             this.statusSQL = "Erro ao tentar buscar Usuário! " + ex.getMessage();
         }
@@ -111,6 +129,16 @@ public class Usuario extends ConectarDao implements IcrudDao  {
     ex.getMessage();    
     } 
  }
+    public void atualizarFoto() {
+        try {
+            sql = "UPDATE TB_USUARIO SET NM_FOTO = ? WHERE UCASE(TRIM(EMAIL)) = UCASE(TRIM(?)) ";
+            ps = con.prepareStatement(sql); // prepara SQL
+            ps.setString(1, img); // Configura Parametros
+            ps.setString(2, email); // Configura Parametros
+            ps.executeUpdate(); // executa comando SQL
+            this.statusSQL = null; // armazena null se deu tudo certo
+        } catch (SQLException ex) {
+         this.statusSQL = "Erro ao atualizar foto ! <br> " + sql + ex.getMessage();}}
 
 @Override
 public boolean salvar() {
@@ -130,6 +158,46 @@ public boolean buscar() {
     @Override
 public boolean buscarSQL() {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    public int getPkuser() {
+        return pkuser;
+    }
+
+    public void setPkuser(int pkuser) {
+        this.pkuser = pkuser;
+    }
+
+    public String getImg() {
+        return img;
+    }
+
+    public void setImg(String img) {
+        this.img = img;
+    }
+
+    public String getNivelMaster() {
+        return nivelMaster;
+    }
+
+    public void setNivelMaster(String nivelMaster) {
+        this.nivelMaster = nivelMaster;
+    }
+
+    public String getUserMaster() {
+        return userMaster;
+    }
+
+    public void setUserMaster(String userMaster) {
+        this.userMaster = userMaster;
+    }
+
+    public String getSenhaMaster() {
+        return senhaMaster;
+    }
+
+    public void setSenhaMaster(String senhaMaster) {
+        this.senhaMaster = senhaMaster;
     }
 
 
